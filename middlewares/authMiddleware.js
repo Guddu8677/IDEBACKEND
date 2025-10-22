@@ -9,13 +9,14 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select('-password');
       if (!req.user) return res.status(401).json({ message: 'User not found' });
-      return next();
+      next();
     } catch (error) {
-      console.error('authMiddleware', error);
+      console.error('Auth Middleware Error:', error);
       return res.status(401).json({ message: 'Token invalid' });
     }
+  } else {
+    return res.status(401).json({ message: 'No token' });
   }
-  return res.status(401).json({ message: 'No token' });
 };
 
 module.exports = { protect };
